@@ -117,6 +117,11 @@ The debug APK will be generated at:
 app/build/outputs/apk/debug/app-debug.apk
 ```
 
+Release App Bundles are signed with a local upload key configured through the
+Git-ignored `keystore.properties` file. See
+[`docs/release-signing.md`](docs/release-signing.md) for the build command,
+certificate fingerprint, and backup requirements.
+
 Run the unit tests with:
 
 ```bash
