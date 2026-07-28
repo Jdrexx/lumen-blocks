@@ -56,6 +56,8 @@ earn the highest score possible.
 - Optional sound, haptic feedback, and high-contrast setting
 - Portrait, immersive full-screen presentation
 - Offline play with no account or network requirement
+- Optional Google Play Games v2 authentication, global leaderboards, and cloud
+  achievements (enabled after Play Console configuration)
 - Support for Android 8.0 (API 26) and newer
 
 ## Game modes
@@ -121,9 +123,21 @@ Run the unit tests with:
 ./gradlew testDebugUnitTest
 ```
 
+## Google Play Games Services
+
+The app includes a Google Play Games Services v2 integration while retaining
+offline play as the default. Once configured, completed runs submit to a
+mode-specific global leaderboard and synchronize the six in-game achievements.
+The Statistics and Achievements screens also open Google's native interfaces.
+
+Play Games is disabled in ordinary builds until valid Play Console resources
+are installed. Follow [`docs/google-play-games-setup.md`](docs/google-play-games-setup.md)
+to choose the permanent application ID, create debug and release credentials,
+replace the resource placeholders, and enable the integration.
+
 ## Project status
 
 Lumen Blocks is an actively developed playable prototype. The current build
 contains the complete offline-first progression foundation. Future production
 work will focus on richer scene artwork, more animation and audio, automated
-game-rule tests, cloud backup, and optional Google Play Games leaderboards.
+game-rule tests, and Play Store release preparation.

@@ -74,6 +74,8 @@ private:
     void addTopScore(int score);
     void sendFeedback(int kind) const;
     void shareScore() const;
+    void syncPlayGames() const;
+    void showPlayGames(int view) const;
     int modeIndex() const;
     int objectiveTarget() const;
     int restorationLevel() const;

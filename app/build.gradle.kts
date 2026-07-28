@@ -2,6 +2,10 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+val playGamesEnabled = providers.gradleProperty("PLAY_GAMES_ENABLED")
+    .map(String::toBoolean)
+    .orElse(false)
+
 android {
     namespace = "com.example.gametest"
     compileSdk {
@@ -31,6 +35,10 @@ android {
     }
     buildFeatures {
         prefab = true
+        buildConfig = true
+    }
+    defaultConfig {
+        buildConfigField("boolean", "PLAY_GAMES_ENABLED", playGamesEnabled.get().toString())
     }
     externalNativeBuild {
         cmake {
@@ -44,6 +52,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.games.activity)
+    implementation(libs.google.play.games)
     implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)

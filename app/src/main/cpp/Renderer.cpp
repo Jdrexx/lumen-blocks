@@ -299,6 +299,7 @@ void Renderer::finishGame() {
     if (mode_ == Mode::Daily) profile_.dailyBest = std::max(profile_.dailyBest, score_);
     addTopScore(score_);
     saveProfile();
+    syncPlayGames();
 }
 
 void Renderer::sendFeedback(int kind) const {
@@ -331,6 +332,42 @@ void Renderer::shareScore() const {
     jmethodID method = environment->GetMethodID(activityClass, "shareScore", "(II)V");
     if (method) {
         environment->CallVoidMethod(app_->activity->javaGameActivity, method, score_, modeIndex());
+    }
+    environment->DeleteLocalRef(activityClass);
+    if (detach) app_->activity->vm->DetachCurrentThread();
+}
+
+void Renderer::syncPlayGames() const {
+    JNIEnv *environment = nullptr;
+    bool detach = false;
+    if (app_->activity->vm->GetEnv(reinterpret_cast<void **>(&environment), JNI_VERSION_1_6) !=
+        JNI_OK) {
+        if (app_->activity->vm->AttachCurrentThread(&environment, nullptr) != JNI_OK) return;
+        detach = true;
+    }
+    jclass activityClass = environment->GetObjectClass(app_->activity->javaGameActivity);
+    jmethodID method = environment->GetMethodID(activityClass, "syncPlayGames", "(IIIIII)V");
+    if (method) {
+        environment->CallVoidMethod(
+                app_->activity->javaGameActivity, method, score_, modeIndex(),
+                profile_.totalLines, profile_.totalPieces, profile_.maxCombo, profile_.lumen);
+    }
+    environment->DeleteLocalRef(activityClass);
+    if (detach) app_->activity->vm->DetachCurrentThread();
+}
+
+void Renderer::showPlayGames(int view) const {
+    JNIEnv *environment = nullptr;
+    bool detach = false;
+    if (app_->activity->vm->GetEnv(reinterpret_cast<void **>(&environment), JNI_VERSION_1_6) !=
+        JNI_OK) {
+        if (app_->activity->vm->AttachCurrentThread(&environment, nullptr) != JNI_OK) return;
+        detach = true;
+    }
+    jclass activityClass = environment->GetObjectClass(app_->activity->javaGameActivity);
+    jmethodID method = environment->GetMethodID(activityClass, "showPlayGames", "(I)V");
+    if (method) {
+        environment->CallVoidMethod(app_->activity->javaGameActivity, method, view);
     }
     environment->DeleteLocalRef(activityClass);
     if (detach) app_->activity->vm->DetachCurrentThread();
@@ -578,7 +615,8 @@ void Renderer::drawStats() {
         drawNumber(profile_.topScores[i], 0.50f, 0.65f + i * 0.045f, 0.018f,
                    i == 0 ? kAccent : kText);
     }
-    drawButton(0.20f, 0.90f, 0.80f, 0.96f, "BACK", kAccent);
+    drawButton(0.12f, 0.89f, 0.48f, 0.95f, "BACK", kAccent);
+    drawButton(0.52f, 0.89f, 0.88f, 0.95f, "GLOBAL", kPanel);
 }
 
 void Renderer::drawAchievements() {
@@ -599,7 +637,8 @@ void Renderer::drawAchievements() {
         drawText(achievements[i].name, 0.50f, 0.184f + i * 0.105f, 0.011f,
                  achievements[i].earned ? kText : Color{0.45f, 0.50f, 0.60f, 1});
     }
-    drawButton(0.20f, 0.88f, 0.80f, 0.94f, "BACK", kAccent);
+    drawButton(0.12f, 0.86f, 0.48f, 0.93f, "BACK", kAccent);
+    drawButton(0.52f, 0.86f, 0.88f, 0.93f, "GOOGLE", kPanel);
 }
 
 void Renderer::drawNumber(int value, float centerX, float top, float digitWidth,
@@ -744,8 +783,14 @@ void Renderer::pointerDown(float x, float y) {
         saveProfile();
         return;
     }
-    if (screen_ == Screen::Stats || screen_ == Screen::Achievements) {
-        if (y > 0.84f) screen_ = Screen::Home;
+    if (screen_ == Screen::Stats) {
+        if (y > 0.84f && x < 0.50f) screen_ = Screen::Home;
+        else if (y > 0.84f) showPlayGames(0);
+        return;
+    }
+    if (screen_ == Screen::Achievements) {
+        if (y > 0.82f && x < 0.50f) screen_ = Screen::Home;
+        else if (y > 0.82f) showPlayGames(1);
         return;
     }
     if (screen_ != Screen::Playing) return;
