@@ -7,13 +7,13 @@ val playGamesEnabled = providers.gradleProperty("PLAY_GAMES_ENABLED")
     .orElse(false)
 
 android {
-    namespace = "com.example.gametest"
+    namespace = "com.jdrexx.lumenblocks"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.example.gametest"
+        applicationId = "com.jdrexx.lumenblocks"
         minSdk = 26
         targetSdk = 37
         versionCode = 1

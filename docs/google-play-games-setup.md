@@ -7,10 +7,8 @@ is signed out or has no network connection.
 
 ## 1. Choose the permanent package name
 
-The prototype currently uses `com.example.gametest`. Do not register that
-placeholder in Play Console. Choose the permanent reverse-domain application ID
-(for example, `com.yourstudio.lumenblocks`) and update both `namespace` and
-`applicationId` in `app/build.gradle.kts` before creating Play credentials.
+The permanent application ID is `com.jdrexx.lumenblocks`. Register this exact
+value in Play Console and use it for both debug and release Android credentials.
 
 Changing the application ID after a Play Store release creates a different app.
 
@@ -35,6 +33,12 @@ Get the local debug fingerprint with:
 
 ```bash
 ./gradlew signingReport
+```
+
+The current development machine's debug SHA-1 is:
+
+```text
+5C:AE:26:65:A2:DA:49:48:61:B5:6A:AC:3B:7B:FC:81:B2:12:D4:FF
 ```
 
 In Play Console, add tester Gmail accounts before testing an unpublished game.

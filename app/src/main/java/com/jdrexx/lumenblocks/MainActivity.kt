@@ -1,4 +1,4 @@
-package com.example.gametest
+package com.jdrexx.lumenblocks
 
 import android.media.AudioManager
 import android.media.ToneGenerator
