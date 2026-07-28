@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Lumen Blocks</string>
+    <!-- Replace these values with the IDs exported by Google Play Console. -->
+    <string name="game_services_project_id" translatable="false">000000000000</string>
+    <string name="leaderboard_classic" translatable="false">REPLACE_CLASSIC_LEADERBOARD_ID</string>
+    <string name="leaderboard_journey" translatable="false">REPLACE_JOURNEY_LEADERBOARD_ID</string>
+    <string name="leaderboard_daily" translatable="false">REPLACE_DAILY_LEADERBOARD_ID</string>
+    <string name="leaderboard_zen" translatable="false">REPLACE_ZEN_LEADERBOARD_ID</string>
+    <string name="leaderboard_rush" translatable="false">REPLACE_RUSH_LEADERBOARD_ID</string>
+    <string name="achievement_first_light" translatable="false">REPLACE_FIRST_LIGHT_ACHIEVEMENT_ID</string>
+    <string name="achievement_line_keeper" translatable="false">REPLACE_LINE_KEEPER_ACHIEVEMENT_ID</string>
+    <string name="achievement_architect" translatable="false">REPLACE_ARCHITECT_ACHIEVEMENT_ID</string>
+    <string name="achievement_combo_five" translatable="false">REPLACE_COMBO_FIVE_ACHIEVEMENT_ID</string>
+    <string name="achievement_bright_world" translatable="false">REPLACE_BRIGHT_WORLD_ACHIEVEMENT_ID</string>
+    <string name="achievement_master" translatable="false">REPLACE_MASTER_ACHIEVEMENT_ID</string>
 </resources>

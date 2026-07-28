@@ -1,15 +1,27 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
 }
 
+val playGamesEnabled = providers.gradleProperty("PLAY_GAMES_ENABLED")
+    .map(String::toBoolean)
+    .orElse(false)
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties().apply {
+    if (keystorePropertiesFile.exists()) {
+        keystorePropertiesFile.inputStream().use(::load)
+    }
+}
+
 android {
-    namespace = "com.example.gametest"
+    namespace = "com.jdrexx.lumenblocks"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.example.gametest"
+        applicationId = "com.jdrexx.lumenblocks"
         minSdk = 26
         targetSdk = 37
         versionCode = 1
@@ -18,8 +30,19 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            if (keystorePropertiesFile.exists()) {
+                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
+    }
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             optimization {
                 enable = false
             }
@@ -31,6 +54,10 @@ android {
     }
     buildFeatures {
         prefab = true
+        buildConfig = true
+    }
+    defaultConfig {
+        buildConfigField("boolean", "PLAY_GAMES_ENABLED", playGamesEnabled.get().toString())
     }
     externalNativeBuild {
         cmake {
@@ -44,6 +71,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.games.activity)
+    implementation(libs.google.play.games)
     implementation(libs.material)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
