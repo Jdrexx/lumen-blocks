@@ -373,6 +373,23 @@ void Renderer::showPlayGames(int view) const {
     if (detach) app_->activity->vm->DetachCurrentThread();
 }
 
+void Renderer::openPrivacyPolicy() const {
+    JNIEnv *environment = nullptr;
+    bool detach = false;
+    if (app_->activity->vm->GetEnv(reinterpret_cast<void **>(&environment), JNI_VERSION_1_6) !=
+        JNI_OK) {
+        if (app_->activity->vm->AttachCurrentThread(&environment, nullptr) != JNI_OK) return;
+        detach = true;
+    }
+    jclass activityClass = environment->GetObjectClass(app_->activity->javaGameActivity);
+    jmethodID method = environment->GetMethodID(activityClass, "openPrivacyPolicy", "()V");
+    if (method) {
+        environment->CallVoidMethod(app_->activity->javaGameActivity, method);
+    }
+    environment->DeleteLocalRef(activityClass);
+    if (detach) app_->activity->vm->DetachCurrentThread();
+}
+
 void Renderer::render() {
     updateRenderArea();
     const auto now = std::chrono::steady_clock::now();
@@ -596,6 +613,7 @@ void Renderer::drawSettings() {
                profile_.hapticsEnabled ? "HAPTICS ON" : "HAPTICS OFF", kPanel);
     drawButton(0.14f, 0.46f, 0.86f, 0.53f,
                profile_.highContrast ? "CONTRAST ON" : "CONTRAST OFF", kPanel);
+    drawButton(0.14f, 0.59f, 0.86f, 0.66f, "PRIVACY", kPanel);
     drawButton(0.20f, 0.82f, 0.80f, 0.89f, "BACK", kAccent);
 }
 
@@ -779,6 +797,7 @@ void Renderer::pointerDown(float x, float y) {
         if (y > 0.22f && y < 0.33f) profile_.soundEnabled = !profile_.soundEnabled;
         else if (y > 0.33f && y < 0.44f) profile_.hapticsEnabled = !profile_.hapticsEnabled;
         else if (y > 0.44f && y < 0.55f) profile_.highContrast = !profile_.highContrast;
+        else if (y > 0.57f && y < 0.68f) openPrivacyPolicy();
         else if (y > 0.78f) screen_ = Screen::Home;
         saveProfile();
         return;

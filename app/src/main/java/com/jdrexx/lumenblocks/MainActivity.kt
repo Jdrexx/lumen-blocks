@@ -3,6 +3,7 @@ package com.jdrexx.lumenblocks
 import android.media.AudioManager
 import android.media.ToneGenerator
 import android.content.Intent
+import android.net.Uri
 import android.view.View
 import android.view.HapticFeedbackConstants
 import androidx.annotation.Keep
@@ -130,6 +131,18 @@ class MainActivity : GameActivity() {
                 }
                 intentTask.addOnSuccessListener(::startActivity)
             }
+        }
+    }
+
+    @Keep
+    fun openPrivacyPolicy() {
+        runOnUiThread {
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://github.com/Jdrexx/lumen-blocks/blob/main/PRIVACY_POLICY.md")
+                )
+            )
         }
     }
 

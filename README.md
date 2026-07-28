@@ -1,5 +1,7 @@
 # Lumen Blocks
 
+[Privacy Policy](PRIVACY_POLICY.md)
+
 Lumen Blocks is an offline block-placement puzzle game for Android. Drag colorful
 pieces onto an 8×8 board, complete rows and columns, build scoring combos, and
 keep the board open for as long as possible.

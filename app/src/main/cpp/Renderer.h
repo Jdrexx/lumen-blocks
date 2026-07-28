@@ -76,6 +76,7 @@ private:
     void shareScore() const;
     void syncPlayGames() const;
     void showPlayGames(int view) const;
+    void openPrivacyPolicy() const;
     int modeIndex() const;
     int objectiveTarget() const;
     int restorationLevel() const;
