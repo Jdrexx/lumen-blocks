@@ -12,3 +12,6 @@ local.properties
 *.aab
 /keystore.properties
 /release/
+.procoder/state/
+.procoder/index/
+.lycheecache
