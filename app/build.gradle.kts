@@ -4,15 +4,15 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
-val playGamesEnabled = providers.gradleProperty("PLAY_GAMES_ENABLED")
-    .map(String::toBoolean)
-    .orElse(false)
+val playGamesEnabled =
+    providers.gradleProperty("PLAY_GAMES_ENABLED").map(String::toBoolean).orElse(false)
 val keystorePropertiesFile = rootProject.file("keystore.properties")
-val keystoreProperties = Properties().apply {
-    if (keystorePropertiesFile.exists()) {
-        keystorePropertiesFile.inputStream().use(::load)
+val keystoreProperties =
+    Properties().apply {
+        if (keystorePropertiesFile.exists()) {
+            keystorePropertiesFile.inputStream().use(::load)
+        }
     }
-}
 
 android {
     namespace = "com.jdrexx.lumenblocks"

@@ -6,9 +6,7 @@
     "bootstrap": [
       "cmake -S tests -B tests/build && cmake --build tests/build -j"
     ],
-    "test": [
-      "ctest --test-dir tests/build --output-on-failure"
-    ],
+    "test": ["ctest --test-dir tests/build --output-on-failure"],
     "notes": "Android app — full gradle build needs the Android SDK/NDK + android-37 platform (preview), not available on this host. The recipe verifies the pure C++ game rules (game_rules.h) which compile and run anywhere with a C++17 toolchain. Native Renderer.cpp was additionally compile-verified against the NDK 29 sysroot + games-activity 4.0.0 prefab headers with -Werror (0 diagnostics).",
     "evidence": [
       "47/47 game_rules_test checks pass",
