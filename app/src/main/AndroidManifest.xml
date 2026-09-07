@@ -16,6 +16,7 @@
             android:name="com.google.android.gms.games.APP_ID"
             android:value="@string/game_services_project_id" />
 
+        <!-- nosemgrep: exported_activity - MAIN/LAUNCHER entry activity: exported is required for the launcher intent-filter (targetSdk 31+) -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
