@@ -59,17 +59,6 @@ GLuint compileShader(GLenum type, const char *source) {
     return shader;
 }
 
-int pieceWidth(const Renderer::Piece &piece) {
-    int maximum = 0;
-    for (const auto &cell : piece.cells) maximum = std::max(maximum, cell.x);
-    return maximum + 1;
-}
-
-int pieceHeight(const Renderer::Piece &piece) {
-    int maximum = 0;
-    for (const auto &cell : piece.cells) maximum = std::max(maximum, cell.y);
-    return maximum + 1;
-}
 }  // namespace
 
 Renderer::Renderer(android_app *app)
@@ -171,7 +160,11 @@ void Renderer::startGame(Mode mode) {
     if (mode_ == Mode::Daily) {
         const std::time_t now = std::time(nullptr);
         std::tm calendar{};
-        localtime_r(&now, &calendar);
+        // UTC, not local time: the README promises a daily sequence "shared by
+        // everyone playing that date". With localtime_r the challenge drifted
+        // per timezone (and followed manual clock changes). gmtime_r keeps the
+        // daily board identical worldwide for a given UTC date.
+        gmtime_r(&now, &calendar);
         const unsigned int seed = static_cast<unsigned int>(
                 (calendar.tm_year + 1900) * 10000 + (calendar.tm_mon + 1) * 100 +
                 calendar.tm_mday);
@@ -545,15 +538,15 @@ void Renderer::drawGame() {
         if (tray_[slot].used || slot == draggedSlot_) continue;
         const float trayCell = 0.045f;
         const float center = (slot + 0.5f) / 3.0f;
-        const float originX = center - pieceWidth(tray_[slot]) * trayCell * 0.5f;
+        const float originX = center - game::pieceWidth(tray_[slot]) * trayCell * 0.5f;
         const float originY = kTrayTop + 0.065f -
-                pieceHeight(tray_[slot]) * cellHeight(trayCell) * 0.5f;
+                game::pieceHeight(tray_[slot]) * cellHeight(trayCell) * 0.5f;
         drawPiece(tray_[slot], originX, originY, trayCell);
     }
 
     if (draggedSlot_ >= 0) {
         const Piece &piece = tray_[draggedSlot_];
-        drawPiece(piece, touchX_ - pieceWidth(piece) * kCell * 0.5f,
+        drawPiece(piece, touchX_ - game::pieceWidth(piece) * kCell * 0.5f,
                   touchY_ - 0.10f, kCell, 0.92f);
     }
 
@@ -874,7 +867,7 @@ void Renderer::pointerUp(float x, float y) {
 bool Renderer::dragPlacement(int &column, int &row) const {
     if (draggedSlot_ < 0) return false;
     const Piece &piece = tray_[draggedSlot_];
-    const float pieceLeft = touchX_ - pieceWidth(piece) * kCell * 0.5f;
+    const float pieceLeft = touchX_ - game::pieceWidth(piece) * kCell * 0.5f;
     const float pieceTop = touchY_ - 0.10f;
     column = static_cast<int>(std::round((pieceLeft - kBoardLeft) / kCell));
     row = static_cast<int>(std::round((pieceTop - kBoardTop) / cellHeight(kCell)));
@@ -882,15 +875,7 @@ bool Renderer::dragPlacement(int &column, int &row) const {
 }
 
 bool Renderer::canPlace(const Piece &piece, int column, int row) const {
-    for (const auto &cell : piece.cells) {
-        const int x = column + cell.x;
-        const int y = row + cell.y;
-        if (x < 0 || x >= kBoardSize || y < 0 || y >= kBoardSize ||
-            (board_[y][x] != 0 && piece.special != 1)) {
-            return false;
-        }
-    }
-    return true;
+    return game::canPlace(board_, piece, column, row);
 }
 
 void Renderer::placeDraggedPiece() {
@@ -950,17 +935,7 @@ void Renderer::placeDraggedPiece() {
 void Renderer::clearCompletedLines() {
     std::array<bool, kBoardSize> rows{};
     std::array<bool, kBoardSize> columns{};
-    int lineCount = 0;
-    for (int row = 0; row < kBoardSize; ++row) {
-        rows[row] = true;
-        for (int column = 0; column < kBoardSize; ++column) rows[row] &= board_[row][column] != 0;
-        if (rows[row]) ++lineCount;
-    }
-    for (int column = 0; column < kBoardSize; ++column) {
-        columns[column] = true;
-        for (int row = 0; row < kBoardSize; ++row) columns[column] &= board_[row][column] != 0;
-        if (columns[column]) ++lineCount;
-    }
+    const int lineCount = game::scanFullLines(board_, rows, columns);
     if (lineCount == 0) {
         combo_ = 0;
         lastClearCount_ = 0;
@@ -982,15 +957,7 @@ void Renderer::clearCompletedLines() {
 }
 
 bool Renderer::hasAnyMove() const {
-    for (const auto &piece : tray_) {
-        if (piece.used) continue;
-        for (int row = 0; row < kBoardSize; ++row) {
-            for (int column = 0; column < kBoardSize; ++column) {
-                if (canPlace(piece, column, row)) return true;
-            }
-        }
-    }
-    return false;
+    return game::hasAnyMove(board_, tray_);
 }
 
 bool Renderer::trayHasMove() const {

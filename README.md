@@ -130,6 +130,16 @@ Run the unit tests with:
 ./gradlew testDebugUnitTest
 ```
 
+The game rules (placement validity, line scanning, move detection) live in
+`app/src/main/cpp/game_rules.h` — pure C++ with no Android dependencies — and
+are covered by host-side tests that run anywhere a C++17 compiler exists (no
+SDK/NDK needed):
+
+```bash
+cmake -S tests -B tests/build && cmake --build tests/build -j
+ctest --test-dir tests/build --output-on-failure
+```
+
 ## Google Play Games Services
 
 The app includes a Google Play Games Services v2 integration while retaining

@@ -11,21 +11,16 @@
 #include <string>
 #include <vector>
 
+#include "game_rules.h"
+
 struct android_app;
 
 class Renderer {
 public:
-    struct Cell {
-        int x;
-        int y;
-    };
-
-    struct Piece {
-        std::vector<Cell> cells;
-        int color = 0;
-        int special = 0;
-        bool used = false;
-    };
+    // Cell/Piece/board live in game_rules.h (pure, host-testable); Renderer
+    // aliases them so the game logic delegates to the tested code path.
+    using Cell = game::Cell;
+    using Piece = game::Piece;
 
     struct Color {
         float r;
@@ -125,7 +120,7 @@ private:
     GLint positionLocation_ = -1;
     GLint colorLocation_ = -1;
 
-    std::array<std::array<int, 8>, 8> board_{};
+    game::Board board_{};
     std::array<Piece, 3> tray_;
     std::mt19937 random_;
     Profile profile_;
