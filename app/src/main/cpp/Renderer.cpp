@@ -31,6 +31,7 @@ constexpr Renderer::Color kText{0.92f, 0.96f, 1.0f, 1.0f};
 constexpr Renderer::Color kAccent{0.35f, 0.95f, 0.77f, 1.0f};
 constexpr Renderer::Color kDanger{1.0f, 0.34f, 0.42f, 1.0f};
 
+// clang-format off
 constexpr std::array<Renderer::Color, 7> kBlockColors{{
         {0.29f, 0.82f, 1.0f, 1.0f},
         {0.43f, 0.95f, 0.55f, 1.0f},
@@ -40,6 +41,7 @@ constexpr std::array<Renderer::Color, 7> kBlockColors{{
         {0.98f, 0.91f, 0.32f, 1.0f},
         {0.28f, 0.62f, 1.0f, 1.0f},
 }};
+// clang-format on
 
 GLuint compileShader(GLenum type, const char *source) {
     GLuint shader = glCreateShader(type);
@@ -62,9 +64,8 @@ GLuint compileShader(GLenum type, const char *source) {
 }  // namespace
 
 Renderer::Renderer(android_app *app)
-        : app_(app),
-          random_(static_cast<unsigned int>(
-                  std::chrono::steady_clock::now().time_since_epoch().count())) {
+        : app_(app), random_(static_cast<unsigned int>(
+                             std::chrono::steady_clock::now().time_since_epoch().count())) {
     initRenderer();
     loadProfile();
     lastFrame_ = std::chrono::steady_clock::now();
@@ -84,11 +85,13 @@ Renderer::~Renderer() {
 }
 
 void Renderer::initRenderer() {
+    // clang-format off
     constexpr EGLint attributes[] = {
             EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT,
             EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
             EGL_RED_SIZE, 8, EGL_GREEN_SIZE, 8, EGL_BLUE_SIZE, 8,
             EGL_ALPHA_SIZE, 8, EGL_NONE};
+    // clang-format on
 
     display_ = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     eglInitialize(display_, nullptr, nullptr);
@@ -166,8 +169,7 @@ void Renderer::startGame(Mode mode) {
         // daily board identical worldwide for a given UTC date.
         gmtime_r(&now, &calendar);
         const unsigned int seed = static_cast<unsigned int>(
-                (calendar.tm_year + 1900) * 10000 + (calendar.tm_mon + 1) * 100 +
-                calendar.tm_mday);
+                (calendar.tm_year + 1900) * 10000 + (calendar.tm_mon + 1) * 100 + calendar.tm_mday);
         random_.seed(seed);
     } else {
         random_.seed(static_cast<unsigned int>(
@@ -197,6 +199,7 @@ void Renderer::resetGame() {
 
 Renderer::Piece Renderer::randomPiece() {
     static const std::vector<std::vector<Cell>> shapes = {
+            // clang-format off
             {{0, 0}}, {{0, 0}, {1, 0}}, {{0, 0}, {0, 1}},
             {{0, 0}, {1, 0}, {2, 0}}, {{0, 0}, {0, 1}, {0, 2}},
             {{0, 0}, {1, 0}, {0, 1}}, {{0, 0}, {1, 0}, {1, 1}},
@@ -209,6 +212,7 @@ Renderer::Piece Renderer::randomPiece() {
             {{1, 0}, {0, 1}, {1, 1}, {0, 2}},
             {{0, 0}, {1, 0}, {2, 0}, {0, 1}, {1, 1}, {2, 1},
              {0, 2}, {1, 2}, {2, 2}},
+            // clang-format on
     };
     std::uniform_int_distribution<size_t> shapeDistribution(0, shapes.size() - 1);
     std::uniform_int_distribution<int> colorDistribution(0, kBlockColors.size() - 1);
@@ -240,9 +244,9 @@ int Renderer::restorationLevel() const {
 }
 
 std::string Renderer::restorationName() const {
-    static const std::array<const char *, 5> locations{
-            "MOONLIT GARDEN", "SUNKEN LIBRARY", "CRYSTAL OBSERVATORY",
-            "FORGOTTEN CITY", "CELESTIAL TEMPLE"};
+    static const std::array<const char *, 5> locations{"MOONLIT GARDEN", "SUNKEN LIBRARY",
+                                                       "CRYSTAL OBSERVATORY", "FORGOTTEN CITY",
+                                                       "CELESTIAL TEMPLE"};
     return locations[static_cast<size_t>(restorationLevel() / 4)];
 }
 
@@ -253,9 +257,9 @@ void Renderer::loadProfile() {
     int sound = 1;
     int haptics = 1;
     int contrast = 0;
-    input >> profile_.lumen >> profile_.journeyStage >> profile_.totalLines
-          >> profile_.totalPieces >> profile_.gamesPlayed >> profile_.maxCombo
-          >> profile_.dailyBest >> tutorial >> sound >> haptics >> contrast;
+    input >> profile_.lumen >> profile_.journeyStage >> profile_.totalLines >>
+            profile_.totalPieces >> profile_.gamesPlayed >> profile_.maxCombo >>
+            profile_.dailyBest >> tutorial >> sound >> haptics >> contrast;
     for (int &score : profile_.bestScores) input >> score;
     for (int &score : profile_.topScores) input >> score;
     // Clamp every loaded value: lumen.profile is a plaintext file inside the
@@ -283,12 +287,10 @@ void Renderer::loadProfile() {
 void Renderer::saveProfile() const {
     std::ofstream output(std::string(app_->activity->internalDataPath) + "/lumen.profile",
                          std::ios::trunc);
-    output << profile_.lumen << ' ' << profile_.journeyStage << ' '
-           << profile_.totalLines << ' ' << profile_.totalPieces << ' '
-           << profile_.gamesPlayed << ' ' << profile_.maxCombo << ' '
-           << profile_.dailyBest << ' ' << profile_.tutorialSeen << ' '
-           << profile_.soundEnabled << ' ' << profile_.hapticsEnabled << ' '
-           << profile_.highContrast;
+    output << profile_.lumen << ' ' << profile_.journeyStage << ' ' << profile_.totalLines << ' '
+           << profile_.totalPieces << ' ' << profile_.gamesPlayed << ' ' << profile_.maxCombo << ' '
+           << profile_.dailyBest << ' ' << profile_.tutorialSeen << ' ' << profile_.soundEnabled
+           << ' ' << profile_.hapticsEnabled << ' ' << profile_.highContrast;
     for (int score : profile_.bestScores) output << ' ' << score;
     for (int score : profile_.topScores) output << ' ' << score;
     output << '\n';
@@ -303,8 +305,7 @@ void Renderer::finishGame() {
     if (gameOver_) return;
     gameOver_ = true;
     ++profile_.gamesPlayed;
-    profile_.bestScores[modeIndex()] =
-            std::max(profile_.bestScores[modeIndex()], score_);
+    profile_.bestScores[modeIndex()] = std::max(profile_.bestScores[modeIndex()], score_);
     if (mode_ == Mode::Daily) profile_.dailyBest = std::max(profile_.dailyBest, score_);
     addTopScore(score_);
     saveProfile();
@@ -357,9 +358,9 @@ void Renderer::syncPlayGames() const {
     jclass activityClass = environment->GetObjectClass(app_->activity->javaGameActivity);
     jmethodID method = environment->GetMethodID(activityClass, "syncPlayGames", "(IIIIII)V");
     if (method) {
-        environment->CallVoidMethod(
-                app_->activity->javaGameActivity, method, score_, modeIndex(),
-                profile_.totalLines, profile_.totalPieces, profile_.maxCombo, profile_.lumen);
+        environment->CallVoidMethod(app_->activity->javaGameActivity, method, score_, modeIndex(),
+                                    profile_.totalLines, profile_.totalPieces, profile_.maxCombo,
+                                    profile_.lumen);
     }
     environment->DeleteLocalRef(activityClass);
     if (detach) app_->activity->vm->DetachCurrentThread();
@@ -417,8 +418,7 @@ void Renderer::render() {
 
 void Renderer::drawRect(float left, float top, float right, float bottom, const Color &color) {
     const float vertices[] = {
-            left, top, right, top, right, bottom,
-            left, top, right, bottom, left, bottom,
+            left, top, right, top, right, bottom, left, top, right, bottom, left, bottom,
     };
     glUseProgram(program_);
     glBindVertexArray(vertexArray_);
@@ -437,8 +437,8 @@ void Renderer::drawCell(float left, float top, float size, const Color &color, f
     drawRect(left + gapX, top + gapY, left + size - gapX, top + height - gapY, shadow);
     drawRect(left + gapX, top + gapY, left + size - gapX, top + height * 0.72f, face);
     Color shine{1.0f, 1.0f, 1.0f, alpha * 0.2f};
-    drawRect(left + size * 0.18f, top + height * 0.16f,
-             left + size * 0.72f, top + height * 0.22f, shine);
+    drawRect(left + size * 0.18f, top + height * 0.16f, left + size * 0.72f, top + height * 0.22f,
+             shine);
 }
 
 float Renderer::cellHeight(float width) const {
@@ -452,19 +452,31 @@ void Renderer::drawPiece(const Piece &piece, float originX, float originY, float
     if (piece.special == 1) color = {0.92f, 0.92f, 1.0f, 1.0f};
     if (piece.special == 2) color = {1.0f, 0.52f, 0.15f, 1.0f};
     for (const auto &cell : piece.cells) {
-        drawCell(originX + cell.x * cellSize, originY + cell.y * cellHeight(cellSize),
-                 cellSize, color, alpha);
+        drawCell(originX + cell.x * cellSize, originY + cell.y * cellHeight(cellSize), cellSize,
+                 color, alpha);
     }
 }
 
 void Renderer::drawScene() {
     switch (screen_) {
-        case Screen::Home: drawHome(); break;
-        case Screen::Playing: drawGame(); break;
-        case Screen::Tutorial: drawTutorial(); break;
-        case Screen::Settings: drawSettings(); break;
-        case Screen::Stats: drawStats(); break;
-        case Screen::Achievements: drawAchievements(); break;
+        case Screen::Home:
+            drawHome();
+            break;
+        case Screen::Playing:
+            drawGame();
+            break;
+        case Screen::Tutorial:
+            drawTutorial();
+            break;
+        case Screen::Settings:
+            drawSettings();
+            break;
+        case Screen::Stats:
+            drawStats();
+            break;
+        case Screen::Achievements:
+            drawAchievements();
+            break;
     }
 }
 
@@ -473,13 +485,12 @@ void Renderer::drawGame() {
 
     // Original "restoration" identity: a horizon that brightens with the score.
     const float progress = std::min(1.0f, score_ / 1200.0f);
-    Color glow{0.12f + progress * 0.20f, 0.12f + progress * 0.30f,
-               0.25f + progress * 0.35f, 1.0f};
+    Color glow{0.12f + progress * 0.20f, 0.12f + progress * 0.30f, 0.25f + progress * 0.35f, 1.0f};
     drawRect(0.0f, 0.0f, 1.0f, 0.205f, glow);
     drawRect(0.0f, 0.18f, 1.0f, 0.205f, kAccent);
 
-    static const std::array<const char *, 5> modeNames{
-            "CLASSIC", "JOURNEY", "DAILY", "ZEN", "RUSH"};
+    static const std::array<const char *, 5> modeNames{"CLASSIC", "JOURNEY", "DAILY", "ZEN",
+                                                       "RUSH"};
     drawText(modeNames[modeIndex()], 0.16f, 0.025f, 0.012f, kAccent);
     drawText("SCORE", 0.50f, 0.020f, 0.010f, kText);
     drawNumber(score_, 0.50f, 0.055f, 0.055f, kText);
@@ -497,16 +508,15 @@ void Renderer::drawGame() {
     }
 
     const float boardHeight = cellHeight(kBoardWidth);
-    drawRect(kBoardLeft - 0.012f, kBoardTop - 0.008f,
-             kBoardLeft + kBoardWidth + 0.012f,
+    drawRect(kBoardLeft - 0.012f, kBoardTop - 0.008f, kBoardLeft + kBoardWidth + 0.012f,
              kBoardTop + boardHeight + 0.008f, kPanel);
     for (int row = 0; row < kBoardSize; ++row) {
         for (int column = 0; column < kBoardSize; ++column) {
             const float left = kBoardLeft + column * kCell;
             const float top = kBoardTop + row * cellHeight(kCell);
             if (board_[row][column] == 0) {
-                drawCell(left, top, kCell, profile_.highContrast
-                        ? Color{0.22f, 0.27f, 0.36f, 1.0f} : kEmptyCell);
+                drawCell(left, top, kCell,
+                         profile_.highContrast ? Color{0.22f, 0.27f, 0.36f, 1.0f} : kEmptyCell);
             } else {
                 drawCell(left, top, kCell,
                          kBlockColors[static_cast<size_t>(board_[row][column] - 1)]);
@@ -520,8 +530,8 @@ void Renderer::drawGame() {
         if (dragPlacement(column, row)) {
             const bool valid = canPlace(tray_[draggedSlot_], column, row);
             for (const auto &cell : tray_[draggedSlot_].cells) {
-                if (column + cell.x >= 0 && column + cell.x < kBoardSize &&
-                    row + cell.y >= 0 && row + cell.y < kBoardSize) {
+                if (column + cell.x >= 0 && column + cell.x < kBoardSize && row + cell.y >= 0 &&
+                    row + cell.y < kBoardSize) {
                     drawCell(kBoardLeft + (column + cell.x) * kCell,
                              kBoardTop + (row + cell.y) * cellHeight(kCell), kCell,
                              valid ? kAccent : kDanger, 0.60f);
@@ -539,21 +549,20 @@ void Renderer::drawGame() {
         const float trayCell = 0.045f;
         const float center = (slot + 0.5f) / 3.0f;
         const float originX = center - game::pieceWidth(tray_[slot]) * trayCell * 0.5f;
-        const float originY = kTrayTop + 0.065f -
-                game::pieceHeight(tray_[slot]) * cellHeight(trayCell) * 0.5f;
+        const float originY =
+                kTrayTop + 0.065f - game::pieceHeight(tray_[slot]) * cellHeight(trayCell) * 0.5f;
         drawPiece(tray_[slot], originX, originY, trayCell);
     }
 
     if (draggedSlot_ >= 0) {
         const Piece &piece = tray_[draggedSlot_];
-        drawPiece(piece, touchX_ - game::pieceWidth(piece) * kCell * 0.5f,
-                  touchY_ - 0.10f, kCell, 0.92f);
+        drawPiece(piece, touchX_ - game::pieceWidth(piece) * kCell * 0.5f, touchY_ - 0.10f, kCell,
+                  0.92f);
     }
 
     if (gameOver_) {
         drawRect(0.08f, 0.39f, 0.92f, 0.64f, {0.025f, 0.035f, 0.075f, 0.96f});
-        drawText(mode_ == Mode::Rush ? "TIME" : "NO MOVES", 0.50f, 0.415f,
-                 0.018f, kDanger);
+        drawText(mode_ == Mode::Rush ? "TIME" : "NO MOVES", 0.50f, 0.415f, 0.018f, kDanger);
         drawNumber(score_, 0.50f, 0.45f, 0.065f, kDanger);
         drawButton(0.12f, 0.565f, 0.48f, 0.615f, "AGAIN", kAccent);
         drawButton(0.52f, 0.565f, 0.88f, 0.615f, "SHARE", kPanel);
@@ -578,8 +587,7 @@ void Renderer::drawButton(float left, float top, float right, float bottom,
 void Renderer::drawHome() {
     const int level = restorationLevel();
     const float restored = (profile_.lumen % 250) / 250.0f;
-    Color sky{0.06f + level * 0.012f, 0.08f + level * 0.016f,
-              0.16f + level * 0.018f, 1.0f};
+    Color sky{0.06f + level * 0.012f, 0.08f + level * 0.016f, 0.16f + level * 0.018f, 1.0f};
     drawRect(0, 0, 1, 1, sky);
     drawText("LUMEN BLOCKS", 0.50f, 0.065f, 0.028f, kText);
     drawText(restorationName(), 0.50f, 0.135f, 0.012f, kAccent);
@@ -616,12 +624,12 @@ void Renderer::drawTutorial() {
 void Renderer::drawSettings() {
     drawRect(0, 0, 1, 1, kBackground);
     drawText("SETTINGS", 0.50f, 0.08f, 0.025f, kText);
-    drawButton(0.14f, 0.24f, 0.86f, 0.31f,
-               profile_.soundEnabled ? "SOUND ON" : "SOUND OFF", kPanel);
-    drawButton(0.14f, 0.35f, 0.86f, 0.42f,
-               profile_.hapticsEnabled ? "HAPTICS ON" : "HAPTICS OFF", kPanel);
-    drawButton(0.14f, 0.46f, 0.86f, 0.53f,
-               profile_.highContrast ? "CONTRAST ON" : "CONTRAST OFF", kPanel);
+    drawButton(0.14f, 0.24f, 0.86f, 0.31f, profile_.soundEnabled ? "SOUND ON" : "SOUND OFF",
+               kPanel);
+    drawButton(0.14f, 0.35f, 0.86f, 0.42f, profile_.hapticsEnabled ? "HAPTICS ON" : "HAPTICS OFF",
+               kPanel);
+    drawButton(0.14f, 0.46f, 0.86f, 0.53f, profile_.highContrast ? "CONTRAST ON" : "CONTRAST OFF",
+               kPanel);
     drawButton(0.14f, 0.59f, 0.86f, 0.66f, "PRIVACY", kPanel);
     drawButton(0.20f, 0.82f, 0.80f, 0.89f, "BACK", kAccent);
 }
@@ -649,7 +657,10 @@ void Renderer::drawStats() {
 void Renderer::drawAchievements() {
     drawRect(0, 0, 1, 1, kBackground);
     drawText("ACHIEVEMENTS", 0.50f, 0.055f, 0.021f, kText);
-    struct Achievement { const char *name; bool earned; };
+    struct Achievement {
+        const char *name;
+        bool earned;
+    };
     const std::array<Achievement, 6> achievements{{
             {"FIRST LIGHT", profile_.totalLines >= 1},
             {"LINE KEEPER", profile_.totalLines >= 50},
@@ -687,8 +698,7 @@ void Renderer::drawNumber(int value, float centerX, float top, float digitWidth,
 }
 
 void Renderer::drawDigit(int digit, float left, float top, float width, const Color &color) {
-    static constexpr int masks[10] = {
-            0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f};
+    static constexpr int masks[10] = {0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f};
     const float thickness = width * 0.18f;
     const float height = width * 1.75f;
     const int mask = masks[digit];
@@ -712,8 +722,8 @@ void Renderer::drawText(const std::string &text, float centerX, float top, float
     const float pixel = size * 0.25f;
     const float glyphWidth = pixel * 5.0f;
     const float spacing = pixel * 1.4f;
-    const float total = text.empty() ? 0.0f :
-            text.size() * glyphWidth + (text.size() - 1) * spacing;
+    const float total =
+            text.empty() ? 0.0f : text.size() * glyphWidth + (text.size() - 1) * spacing;
     float left = centerX - total * 0.5f;
     for (char glyph : text) {
         drawGlyph(static_cast<char>(std::toupper(glyph)), left, top, pixel, color);
@@ -724,52 +734,126 @@ void Renderer::drawText(const std::string &text, float centerX, float top, float
 void Renderer::drawGlyph(char glyph, float left, float top, float size, const Color &color) {
     const char *pattern = nullptr;
     switch (glyph) {
-        case 'A': pattern="01110100011000111111100011000110001"; break;
-        case 'B': pattern="11110100011000111110100011000111110"; break;
-        case 'C': pattern="01111100001000010000100001000001111"; break;
-        case 'D': pattern="11110100011000110001100011000111110"; break;
-        case 'E': pattern="11111100001000011110100001000011111"; break;
-        case 'F': pattern="11111100001000011110100001000010000"; break;
-        case 'G': pattern="01111100001000010111100011000101111"; break;
-        case 'H': pattern="10001100011000111111100011000110001"; break;
-        case 'I': pattern="11111001000010000100001000010011111"; break;
-        case 'J': pattern="00111000100001000010100100101001100"; break;
-        case 'K': pattern="10001100101010011000101001001010001"; break;
-        case 'L': pattern="10000100001000010000100001000011111"; break;
-        case 'M': pattern="10001110111010110101100011000110001"; break;
-        case 'N': pattern="10001110011010110011100011000110001"; break;
-        case 'O': pattern="01110100011000110001100011000101110"; break;
-        case 'P': pattern="11110100011000111110100001000010000"; break;
-        case 'Q': pattern="01110100011000110001101011001001101"; break;
-        case 'R': pattern="11110100011000111110101001001010001"; break;
-        case 'S': pattern="01111100001000001110000010000111110"; break;
-        case 'T': pattern="11111001000010000100001000010000100"; break;
-        case 'U': pattern="10001100011000110001100011000101110"; break;
-        case 'V': pattern="10001100011000110001100010101000100"; break;
-        case 'W': pattern="10001100011000110101101011101110001"; break;
-        case 'X': pattern="10001100010101000100010101000110001"; break;
-        case 'Y': pattern="10001100010101000100001000010000100"; break;
-        case 'Z': pattern="11111000010001000100010001000011111"; break;
-        case '0': pattern="01110100011001110101110011000101110"; break;
-        case '1': pattern="00100011000010000100001000010001110"; break;
-        case '2': pattern="01110100010000100010001000100011111"; break;
-        case '3': pattern="11110000010000101110000010000111110"; break;
-        case '4': pattern="00010001100101010010111110001000010"; break;
-        case '5': pattern="11111100001000011110000010000111110"; break;
-        case '6': pattern="01110100001000011110100011000101110"; break;
-        case '7': pattern="11111000010001000100010000100001000"; break;
-        case '8': pattern="01110100011000101110100011000101110"; break;
-        case '9': pattern="01110100011000101111000010000101110"; break;
-        case '-': pattern="00000000000000011111000000000000000"; break;
-        default: return;
+        case 'A':
+            pattern = "01110100011000111111100011000110001";
+            break;
+        case 'B':
+            pattern = "11110100011000111110100011000111110";
+            break;
+        case 'C':
+            pattern = "01111100001000010000100001000001111";
+            break;
+        case 'D':
+            pattern = "11110100011000110001100011000111110";
+            break;
+        case 'E':
+            pattern = "11111100001000011110100001000011111";
+            break;
+        case 'F':
+            pattern = "11111100001000011110100001000010000";
+            break;
+        case 'G':
+            pattern = "01111100001000010111100011000101111";
+            break;
+        case 'H':
+            pattern = "10001100011000111111100011000110001";
+            break;
+        case 'I':
+            pattern = "11111001000010000100001000010011111";
+            break;
+        case 'J':
+            pattern = "00111000100001000010100100101001100";
+            break;
+        case 'K':
+            pattern = "10001100101010011000101001001010001";
+            break;
+        case 'L':
+            pattern = "10000100001000010000100001000011111";
+            break;
+        case 'M':
+            pattern = "10001110111010110101100011000110001";
+            break;
+        case 'N':
+            pattern = "10001110011010110011100011000110001";
+            break;
+        case 'O':
+            pattern = "01110100011000110001100011000101110";
+            break;
+        case 'P':
+            pattern = "11110100011000111110100001000010000";
+            break;
+        case 'Q':
+            pattern = "01110100011000110001101011001001101";
+            break;
+        case 'R':
+            pattern = "11110100011000111110101001001010001";
+            break;
+        case 'S':
+            pattern = "01111100001000001110000010000111110";
+            break;
+        case 'T':
+            pattern = "11111001000010000100001000010000100";
+            break;
+        case 'U':
+            pattern = "10001100011000110001100011000101110";
+            break;
+        case 'V':
+            pattern = "10001100011000110001100010101000100";
+            break;
+        case 'W':
+            pattern = "10001100011000110101101011101110001";
+            break;
+        case 'X':
+            pattern = "10001100010101000100010101000110001";
+            break;
+        case 'Y':
+            pattern = "10001100010101000100001000010000100";
+            break;
+        case 'Z':
+            pattern = "11111000010001000100010001000011111";
+            break;
+        case '0':
+            pattern = "01110100011001110101110011000101110";
+            break;
+        case '1':
+            pattern = "00100011000010000100001000010001110";
+            break;
+        case '2':
+            pattern = "01110100010000100010001000100011111";
+            break;
+        case '3':
+            pattern = "11110000010000101110000010000111110";
+            break;
+        case '4':
+            pattern = "00010001100101010010111110001000010";
+            break;
+        case '5':
+            pattern = "11111100001000011110000010000111110";
+            break;
+        case '6':
+            pattern = "01110100001000011110100011000101110";
+            break;
+        case '7':
+            pattern = "11111000010001000100010000100001000";
+            break;
+        case '8':
+            pattern = "01110100011000101110100011000101110";
+            break;
+        case '9':
+            pattern = "01110100011000101111000010000101110";
+            break;
+        case '-':
+            pattern = "00000000000000011111000000000000000";
+            break;
+        default:
+            return;
     }
     const float pixelHeight = cellHeight(size);
     for (int row = 0; row < 7; ++row) {
         for (int column = 0; column < 5; ++column) {
             if (pattern[row * 5 + column] == '1') {
                 drawRect(left + column * size, top + row * pixelHeight,
-                         left + (column + 0.82f) * size,
-                         top + (row + 0.82f) * pixelHeight, color);
+                         left + (column + 0.82f) * size, top + (row + 0.82f) * pixelHeight, color);
             }
         }
     }
@@ -783,15 +867,24 @@ int Renderer::traySlotAt(float x, float y) const {
 
 void Renderer::pointerDown(float x, float y) {
     if (screen_ == Screen::Home) {
-        if (y > 0.30f && y < 0.38f) startGame(Mode::Classic);
-        else if (y > 0.38f && y < 0.46f) startGame(Mode::Journey);
-        else if (y > 0.46f && y < 0.54f && x < 0.50f) startGame(Mode::Daily);
-        else if (y > 0.46f && y < 0.54f) startGame(Mode::Zen);
-        else if (y > 0.54f && y < 0.62f) startGame(Mode::Rush);
-        else if (y > 0.70f && y < 0.79f && x < 0.39f) screen_ = Screen::Tutorial;
-        else if (y > 0.70f && y < 0.79f && x < 0.70f) screen_ = Screen::Stats;
-        else if (y > 0.70f && y < 0.79f) screen_ = Screen::Settings;
-        else if (y > 0.79f && y < 0.87f) screen_ = Screen::Achievements;
+        if (y > 0.30f && y < 0.38f)
+            startGame(Mode::Classic);
+        else if (y > 0.38f && y < 0.46f)
+            startGame(Mode::Journey);
+        else if (y > 0.46f && y < 0.54f && x < 0.50f)
+            startGame(Mode::Daily);
+        else if (y > 0.46f && y < 0.54f)
+            startGame(Mode::Zen);
+        else if (y > 0.54f && y < 0.62f)
+            startGame(Mode::Rush);
+        else if (y > 0.70f && y < 0.79f && x < 0.39f)
+            screen_ = Screen::Tutorial;
+        else if (y > 0.70f && y < 0.79f && x < 0.70f)
+            screen_ = Screen::Stats;
+        else if (y > 0.70f && y < 0.79f)
+            screen_ = Screen::Settings;
+        else if (y > 0.79f && y < 0.87f)
+            screen_ = Screen::Achievements;
         return;
     }
     if (screen_ == Screen::Tutorial) {
@@ -803,22 +896,31 @@ void Renderer::pointerDown(float x, float y) {
         return;
     }
     if (screen_ == Screen::Settings) {
-        if (y > 0.22f && y < 0.33f) profile_.soundEnabled = !profile_.soundEnabled;
-        else if (y > 0.33f && y < 0.44f) profile_.hapticsEnabled = !profile_.hapticsEnabled;
-        else if (y > 0.44f && y < 0.55f) profile_.highContrast = !profile_.highContrast;
-        else if (y > 0.57f && y < 0.68f) openPrivacyPolicy();
-        else if (y > 0.78f) screen_ = Screen::Home;
+        if (y > 0.22f && y < 0.33f)
+            profile_.soundEnabled = !profile_.soundEnabled;
+        else if (y > 0.33f && y < 0.44f)
+            profile_.hapticsEnabled = !profile_.hapticsEnabled;
+        else if (y > 0.44f && y < 0.55f)
+            profile_.highContrast = !profile_.highContrast;
+        else if (y > 0.57f && y < 0.68f)
+            openPrivacyPolicy();
+        else if (y > 0.78f)
+            screen_ = Screen::Home;
         saveProfile();
         return;
     }
     if (screen_ == Screen::Stats) {
-        if (y > 0.84f && x < 0.50f) screen_ = Screen::Home;
-        else if (y > 0.84f) showPlayGames(0);
+        if (y > 0.84f && x < 0.50f)
+            screen_ = Screen::Home;
+        else if (y > 0.84f)
+            showPlayGames(0);
         return;
     }
     if (screen_ == Screen::Achievements) {
-        if (y > 0.82f && x < 0.50f) screen_ = Screen::Home;
-        else if (y > 0.82f) showPlayGames(1);
+        if (y > 0.82f && x < 0.50f)
+            screen_ = Screen::Home;
+        else if (y > 0.82f)
+            showPlayGames(1);
         return;
     }
     if (screen_ != Screen::Playing) return;
@@ -832,8 +934,10 @@ void Renderer::pointerDown(float x, float y) {
         return;
     }
     if (gameOver_) {
-        if (y > 0.54f && y < 0.64f && x > 0.50f) shareScore();
-        else if (y > 0.36f && y < 0.68f) startGame(mode_);
+        if (y > 0.54f && y < 0.64f && x > 0.50f)
+            shareScore();
+        else if (y > 0.36f && y < 0.68f)
+            startGame(mode_);
         return;
     }
     if (paused_) return;
@@ -899,7 +1003,8 @@ void Renderer::placeDraggedPiece() {
                     const int x = centerX + offsetX;
                     const int y = centerY + offsetY;
                     if (x >= 0 && x < kBoardSize && y >= 0 && y < kBoardSize &&
-                        !(offsetX == 0 && offsetY == 0)) board_[y][x] = 0;
+                        !(offsetX == 0 && offsetY == 0))
+                        board_[y][x] = 0;
                 }
             }
         }
@@ -971,7 +1076,7 @@ void Renderer::handleInput() {
         GameActivityMotionEvent &event = buffer->motionEvents[i];
         const int action = event.action & AMOTION_EVENT_ACTION_MASK;
         const int pointerIndex = (event.action & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >>
-                AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
+                                 AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
         if (action == AMOTION_EVENT_ACTION_DOWN) {
             const auto &pointer = event.pointers[pointerIndex];
             activePointerId_ = pointer.id;
@@ -986,8 +1091,8 @@ void Renderer::handleInput() {
                     break;
                 }
             }
-        } else if ((action == AMOTION_EVENT_ACTION_UP ||
-                    action == AMOTION_EVENT_ACTION_CANCEL) && activePointerId_ >= 0) {
+        } else if ((action == AMOTION_EVENT_ACTION_UP || action == AMOTION_EVENT_ACTION_CANCEL) &&
+                   activePointerId_ >= 0) {
             const auto &pointer = event.pointers[pointerIndex];
             pointerUp(GameActivityPointerAxes_getX(&pointer) / width_,
                       GameActivityPointerAxes_getY(&pointer) / height_);

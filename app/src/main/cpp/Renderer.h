@@ -94,8 +94,8 @@ private:
     void drawSettings();
     void drawStats();
     void drawAchievements();
-    void drawButton(float left, float top, float right, float bottom,
-                    const std::string &label, const Color &color);
+    void drawButton(float left, float top, float right, float bottom, const std::string &label,
+                    const Color &color);
     void drawRect(float left, float top, float right, float bottom, const Color &color);
     void drawCell(float left, float top, float size, const Color &color, float alpha = 1.0f);
     void drawPiece(const Piece &piece, float originX, float originY, float cellSize,

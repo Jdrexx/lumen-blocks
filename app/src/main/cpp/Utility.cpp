@@ -3,7 +3,10 @@
 
 #include <GLES3/gl3.h>
 
-#define CHECK_ERROR(e) case e: aout << "GL Error: "#e << std::endl; break;
+#define CHECK_ERROR(e)                                                                             \
+    case e:                                                                                        \
+        aout << "GL Error: " #e << std::endl;                                                      \
+        break;
 
 bool Utility::checkAndLogGlError(bool alwaysLog) {
     GLenum error = glGetError();
@@ -26,9 +29,8 @@ bool Utility::checkAndLogGlError(bool alwaysLog) {
     }
 }
 
-float *
-Utility::buildOrthographicMatrix(float *outMatrix, float halfHeight, float aspect, float near,
-                                 float far) {
+float *Utility::buildOrthographicMatrix(float *outMatrix, float halfHeight, float aspect,
+                                        float near, float far) {
     float halfWidth = halfHeight * aspect;
 
     // column 1

@@ -7,7 +7,9 @@ class Utility {
 public:
     static bool checkAndLogGlError(bool alwaysLog = false);
 
-    static inline void assertGlError() { assert(checkAndLogGlError()); }
+    static inline void assertGlError() {
+        assert(checkAndLogGlError());
+    }
 
     /**
      * Generates an orthographic projection matrix given the half height, aspect ratio, near, and far
@@ -21,14 +23,10 @@ public:
      * @return the generated matrix, this will be the same as @a outMatrix so you can chain calls
      *     together if needed
      */
-    static float *buildOrthographicMatrix(
-            float *outMatrix,
-            float halfHeight,
-            float aspect,
-            float near,
-            float far);
+    static float *buildOrthographicMatrix(float *outMatrix, float halfHeight, float aspect,
+                                          float near, float far);
 
     static float *buildIdentityMatrix(float *outMatrix);
 };
 
-#endif //ANDROIDGLINVESTIGATIONS_UTILITY_H
+#endif  //ANDROIDGLINVESTIGATIONS_UTILITY_H

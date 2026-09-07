@@ -1,0 +1,21 @@
+# Lumen Blocks C++ style — tuned to the codebase's hand style so the
+# procoder/clang-format gate agrees with how this repo is actually written.
+# Hand-formatted data tables are wrapped in `// clang-format off/on` guards
+# (kBlockColors, the EGL attribute list, the piece-shape table) because
+# clang-format cannot reproduce their deliberate row groupings.
+BasedOnStyle: LLVM
+IndentWidth: 4
+ColumnLimit: 100
+PointerAlignment: Right
+IndentCaseLabels: true
+AccessModifierOffset: -4
+ContinuationIndentWidth: 8
+BreakBeforeBraces: Attach
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
+BreakConstructorInitializers: BeforeColon
+ConstructorInitializerIndentWidth: 8
+SpacesBeforeTrailingComments: 2
+SortIncludes: false
+ReflowComments: false

@@ -27,12 +27,10 @@ public:
      * @param projectionMatrixUniformName The name of your model/view/projection matrix uniform
      * @return a valid Shader on success, otherwise null.
      */
-    static Shader *loadShader(
-            const std::string &vertexSource,
-            const std::string &fragmentSource,
-            const std::string &positionAttributeName,
-            const std::string &uvAttributeName,
-            const std::string &projectionMatrixUniformName);
+    static Shader *loadShader(const std::string &vertexSource, const std::string &fragmentSource,
+                              const std::string &positionAttributeName,
+                              const std::string &uvAttributeName,
+                              const std::string &projectionMatrixUniformName);
 
     inline ~Shader() {
         if (program_) {
@@ -79,15 +77,9 @@ private:
      * @param uv the attribute location of the uv coordinates
      * @param projectionMatrix the uniform location of the projection matrix
      */
-    constexpr Shader(
-            GLuint program,
-            GLint position,
-            GLint uv,
-            GLint projectionMatrix)
-            : program_(program),
-              position_(position),
-              uv_(uv),
-              projectionMatrix_(projectionMatrix) {}
+    constexpr Shader(GLuint program, GLint position, GLint uv, GLint projectionMatrix)
+            : program_(program), position_(position), uv_(uv), projectionMatrix_(projectionMatrix) {
+    }
 
     GLuint program_;
     GLint position_;
@@ -95,4 +87,4 @@ private:
     GLint projectionMatrix_;
 };
 
-#endif //ANDROIDGLINVESTIGATIONS_SHADER_H
+#endif  //ANDROIDGLINVESTIGATIONS_SHADER_H

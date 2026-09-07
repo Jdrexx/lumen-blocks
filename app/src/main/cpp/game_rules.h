@@ -66,8 +66,7 @@ inline bool hasAnyMove(const Board &board, const std::array<Piece, 3> &tray) {
 // full and records WHICH ones in fullRows/fullColumns (callers clear those
 // cells). A cell at the intersection of a full row and a full column is
 // counted once per line, matching a simultaneous multi-line clear.
-inline int scanFullLines(const Board &board,
-                         std::array<bool, kBoardSize> &fullRows,
+inline int scanFullLines(const Board &board, std::array<bool, kBoardSize> &fullRows,
                          std::array<bool, kBoardSize> &fullColumns) {
     fullRows.fill(false);
     fullColumns.fill(false);

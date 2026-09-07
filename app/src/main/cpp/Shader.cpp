@@ -4,12 +4,10 @@
 #include "Model.h"
 #include "Utility.h"
 
-Shader *Shader::loadShader(
-        const std::string &vertexSource,
-        const std::string &fragmentSource,
-        const std::string &positionAttributeName,
-        const std::string &uvAttributeName,
-        const std::string &projectionMatrixUniformName) {
+Shader *Shader::loadShader(const std::string &vertexSource, const std::string &fragmentSource,
+                           const std::string &positionAttributeName,
+                           const std::string &uvAttributeName,
+                           const std::string &projectionMatrixUniformName) {
     Shader *shader = nullptr;
 
     GLuint vertexShader = loadShader(GL_VERTEX_SHADER, vertexSource);
@@ -49,20 +47,14 @@ Shader *Shader::loadShader(
             // indices with layout= in your shader, but it is not done in this sample
             GLint positionAttribute = glGetAttribLocation(program, positionAttributeName.c_str());
             GLint uvAttribute = glGetAttribLocation(program, uvAttributeName.c_str());
-            GLint projectionMatrixUniform = glGetUniformLocation(
-                    program,
-                    projectionMatrixUniformName.c_str());
+            GLint projectionMatrixUniform =
+                    glGetUniformLocation(program, projectionMatrixUniformName.c_str());
 
             // Only create a new shader if all the attributes are found.
-            if (positionAttribute != -1
-                && uvAttribute != -1
-                && projectionMatrixUniform != -1) {
+            if (positionAttribute != -1 && uvAttribute != -1 && projectionMatrixUniform != -1) {
 
-                shader = new Shader(
-                        program,
-                        positionAttribute,
-                        uvAttribute,
-                        projectionMatrixUniform);
+                shader = new Shader(program, positionAttribute, uvAttribute,
+                                    projectionMatrixUniform);
             } else {
                 glDeleteProgram(program);
             }
@@ -80,7 +72,7 @@ GLuint Shader::loadShader(GLenum shaderType, const std::string &shaderSource) {
     Utility::assertGlError();
     GLuint shader = glCreateShader(shaderType);
     if (shader) {
-        auto *shaderRawString = (GLchar *) shaderSource.c_str();
+        auto *shaderRawString = (GLchar *)shaderSource.c_str();
         GLint shaderLength = shaderSource.length();
         glShaderSource(shader, 1, &shaderRawString, &shaderLength);
         glCompileShader(shader);
@@ -117,24 +109,23 @@ void Shader::deactivate() const {
 
 void Shader::drawModel(const Model &model) const {
     // The position attribute is 3 floats
-    glVertexAttribPointer(
-            position_, // attrib
-            3, // elements
-            GL_FLOAT, // of type float
-            GL_FALSE, // don't normalize
-            sizeof(Vertex), // stride is Vertex bytes
-            model.getVertexData() // pull from the start of the vertex data
+    glVertexAttribPointer(position_,             // attrib
+                          3,                     // elements
+                          GL_FLOAT,              // of type float
+                          GL_FALSE,              // don't normalize
+                          sizeof(Vertex),        // stride is Vertex bytes
+                          model.getVertexData()  // pull from the start of the vertex data
     );
     glEnableVertexAttribArray(position_);
 
     // The uv attribute is 2 floats
     glVertexAttribPointer(
-            uv_, // attrib
-            2, // elements
-            GL_FLOAT, // of type float
-            GL_FALSE, // don't normalize
-            sizeof(Vertex), // stride is Vertex bytes
-            ((uint8_t *) model.getVertexData()) + sizeof(Vector3) // offset Vector3 from the start
+            uv_,                                                  // attrib
+            2,                                                    // elements
+            GL_FLOAT,                                             // of type float
+            GL_FALSE,                                             // don't normalize
+            sizeof(Vertex),                                       // stride is Vertex bytes
+            ((uint8_t *)model.getVertexData()) + sizeof(Vector3)  // offset Vector3 from the start
     );
     glEnableVertexAttribArray(uv_);
 

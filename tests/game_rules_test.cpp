@@ -15,21 +15,33 @@ namespace {
 
 int g_checks = 0;
 
-#define CHECK(cond)                                                     \
-    do {                                                                \
-        ++g_checks;                                                     \
-        if (!(cond)) {                                                  \
-            std::printf("FAIL %s:%d: %s\n", __FILE__, __LINE__, #cond); \
-            std::exit(1);                                               \
-        }                                                               \
+#define CHECK(cond)                                                                                \
+    do {                                                                                           \
+        ++g_checks;                                                                                \
+        if (!(cond)) {                                                                             \
+            std::printf("FAIL %s:%d: %s\n", __FILE__, __LINE__, #cond);                            \
+            std::exit(1);                                                                          \
+        }                                                                                          \
     } while (0)
 
-Piece single(int color = 1) { return {{{0, 0}}, color, 0, false}; }
-Piece domino() { return {{{0, 0}, {1, 0}}, 1, 0, false}; }
-Piece square() { return {{{0, 0}, {1, 0}, {0, 1}, {1, 1}}, 1, 0, false}; }
-Piece prism() { return {{{0, 0}, {1, 0}}, 1, 1, false}; }        // may overlap
-Piece lantern() { return {{{0, 0}, {1, 0}}, 1, 2, false}; }      // may NOT overlap
-Piece line4() { return {{{0, 0}, {1, 0}, {2, 0}, {3, 0}}, 1, 0, false}; }
+Piece single(int color = 1) {
+    return {{{0, 0}}, color, 0, false};
+}
+Piece domino() {
+    return {{{0, 0}, {1, 0}}, 1, 0, false};
+}
+Piece square() {
+    return {{{0, 0}, {1, 0}, {0, 1}, {1, 1}}, 1, 0, false};
+}
+Piece prism() {
+    return {{{0, 0}, {1, 0}}, 1, 1, false};
+}  // may overlap
+Piece lantern() {
+    return {{{0, 0}, {1, 0}}, 1, 2, false};
+}  // may NOT overlap
+Piece line4() {
+    return {{{0, 0}, {1, 0}, {2, 0}, {3, 0}}, 1, 0, false};
+}
 
 void test_canPlace_bounds() {
     Board b{};  // empty
@@ -42,10 +54,10 @@ void test_canPlace_bounds() {
     // Multi-cell pieces must land entirely in-bounds.
     Piece vertical = {{{0, 0}, {0, 1}, {0, 2}, {0, 3}}, 1, 0, false};
     CHECK(game::canPlace(b, line4(), 4, 0));
-    CHECK(!game::canPlace(b, line4(), 5, 0));    // hangs off the right edge
-    CHECK(!game::canPlace(b, vertical, 0, 5));   // row 8 is off-board
-    CHECK(game::canPlace(b, vertical, 0, 4));    // rows 4..7 — just fits
-    CHECK(!game::canPlace(b, square(), 7, 7));   // 2x2 from the corner
+    CHECK(!game::canPlace(b, line4(), 5, 0));   // hangs off the right edge
+    CHECK(!game::canPlace(b, vertical, 0, 5));  // row 8 is off-board
+    CHECK(game::canPlace(b, vertical, 0, 4));   // rows 4..7 — just fits
+    CHECK(!game::canPlace(b, square(), 7, 7));  // 2x2 from the corner
     CHECK(game::canPlace(b, square(), 6, 6));
 }
 
@@ -98,7 +110,10 @@ void test_scanFullLines() {
 
     // Two rows + one column simultaneously.
     Board b3{};
-    for (int c = 0; c < game::kBoardSize; ++c) { b3[1][c] = 2; b3[4][c] = 2; }
+    for (int c = 0; c < game::kBoardSize; ++c) {
+        b3[1][c] = 2;
+        b3[4][c] = 2;
+    }
     for (int r = 0; r < game::kBoardSize; ++r) b3[r][6] = 3;
     CHECK(game::scanFullLines(b3, rows, cols) == 3);
     CHECK(rows[1] && rows[4] && !rows[0]);
@@ -108,10 +123,10 @@ void test_scanFullLines() {
     Board b4{};
     for (auto &row : b4) row.fill(4);
     CHECK(game::scanFullLines(b4, rows, cols) == 16);
-    CHECK((rows == std::array<bool, game::kBoardSize>{
-                   true, true, true, true, true, true, true, true}));
-    CHECK((cols == std::array<bool, game::kBoardSize>{
-                   true, true, true, true, true, true, true, true}));
+    CHECK((rows ==
+           std::array<bool, game::kBoardSize>{true, true, true, true, true, true, true, true}));
+    CHECK((cols ==
+           std::array<bool, game::kBoardSize>{true, true, true, true, true, true, true, true}));
 
     // Nearly-full row with one hole is NOT a clear.
     Board b5{};
