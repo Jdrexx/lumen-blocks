@@ -265,6 +265,22 @@ void Renderer::loadProfile() {
           >> profile_.dailyBest >> tutorial >> sound >> haptics >> contrast;
     for (int &score : profile_.bestScores) input >> score;
     for (int &score : profile_.topScores) input >> score;
+    // Clamp every loaded value: lumen.profile is a plaintext file inside the
+    // app's private dir, but a corrupt/truncated/edited file (or a format
+    // change between versions) must never feed negative counters downstream.
+    // Negative lumen would make restorationLevel() negative and index
+    // restorationName() out of bounds (crash); negative journeyStage would
+    // soft-lock Journey mode behind an impossible line objective.
+    auto clampNonNegative = [](int &value) { value = std::max(0, value); };
+    clampNonNegative(profile_.lumen);
+    profile_.journeyStage = std::clamp(profile_.journeyStage, 0, 100000);
+    clampNonNegative(profile_.totalLines);
+    clampNonNegative(profile_.totalPieces);
+    clampNonNegative(profile_.gamesPlayed);
+    clampNonNegative(profile_.maxCombo);
+    clampNonNegative(profile_.dailyBest);
+    for (int &score : profile_.bestScores) clampNonNegative(score);
+    for (int &score : profile_.topScores) clampNonNegative(score);
     profile_.tutorialSeen = tutorial != 0;
     profile_.soundEnabled = sound != 0;
     profile_.hapticsEnabled = haptics != 0;

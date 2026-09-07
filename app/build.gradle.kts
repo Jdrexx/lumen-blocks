@@ -28,6 +28,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("boolean", "PLAY_GAMES_ENABLED", playGamesEnabled.get().toString())
     }
 
     signingConfigs {
@@ -55,9 +56,6 @@ android {
     buildFeatures {
         prefab = true
         buildConfig = true
-    }
-    defaultConfig {
-        buildConfigField("boolean", "PLAY_GAMES_ENABLED", playGamesEnabled.get().toString())
     }
     externalNativeBuild {
         cmake {
